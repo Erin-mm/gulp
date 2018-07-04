@@ -1,0 +1,1 @@
+"use strict";window.onload=function(){document.querySelector(".content").innerHTML=" gulp is a toolkit for automating painful or time-consuming tasks in your development workflow, so you can stop messing around and build something."};

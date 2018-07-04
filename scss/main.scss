@@ -1,0 +1,19 @@
+body {
+  color: #ccc;
+  background: #000;
+}
+
+figure {
+  figcaption {
+    font-size: 48px;
+  }
+  img {
+    display: block;
+    margin: auto;
+    width: 200px;/* rem */
+    margin-bottom: 75px /* rem */
+  }
+  .content{
+    font-size:36px;
+  }
+}
