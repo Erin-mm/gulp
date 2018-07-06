@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync'),
     sass = require('gulp-sass'),
     postcss = require('gulp-postcss'),
+    autoprefixer = require('autoprefixer'),
     adaptive = require('postcss-adaptive'),
     rev = require('gulp-rev'),
     revCollector = require('gulp-rev-collector'),
@@ -29,12 +30,15 @@ gulp.task('browser-sync', function () {
 
 // 编译sass
 gulp.task('sass', function () {
-    var processors = [adaptive({ remUnit: 75 })];
+    var plugins = [
+        adaptive({ remUnit: 75 }),
+        autoprefixer({ browsers: ['last 1 version'] })
+    ];
     return gulp.src('./scss/*.scss')
         .pipe(sass({
             sourcemaps: true
         }).on('error', sass.logError))
-        .pipe(postcss(processors))
+        .pipe(postcss(plugins))
         .pipe(gulp.dest('./css'));
 });
 
@@ -58,6 +62,7 @@ gulp.task('clean:package', function () {
 
 // 打包html,css,js,images文件
 gulp.task('pack', function () {
+    // 打包css
     var packcss = gulp.src('./css/*.css')
         .pipe(concat('main.css'))
         .pipe(cssmin({
@@ -72,12 +77,7 @@ gulp.task('pack', function () {
         .pipe(rev.manifest())
         .pipe(gulp.dest('./build/css'));
 
-    var packhtml = gulp.src(['*.html'])
-        .pipe(gulp.dest('./build'));
-
-    var packimage = gulp.src('./images/**/*')
-        .pipe(gulp.dest('./build/images'));
-
+    // 打包js
     var packjs = gulp.src(['./js/*.js', '!./js/*.min.js'])
         .pipe(babel({
             presets: ['es2015']
@@ -88,8 +88,15 @@ gulp.task('pack', function () {
         .pipe(rev.manifest())
         .pipe(gulp.dest("./build/js"));
 
+    // 打包minjs
     var packminjs = gulp.src('./js/*.min.js')
         .pipe(gulp.dest('./build/js'));
+    // 打包html
+    var packhtml = gulp.src(['*.html'])
+        .pipe(gulp.dest('./build'));
+    // 打包images
+    var packimage = gulp.src('./images/**/*')
+        .pipe(gulp.dest('./build/images'));
 
     return merge(packcss, packimage, packhtml, packjs, packminjs);
 });
@@ -113,7 +120,7 @@ gulp.task('replace:css', function () {
     }
     gulp.src('./build/*.html')
         .pipe(htmlreplace({
-            'css': './css/'+str,
+            'css': './css/' + str,
         }, { keepBlockTags: true }))
         .pipe(gulp.dest('./build'));
 })
